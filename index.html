@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <link rel="stylesheet" type="text/css" href="styles.css"> -->
+  <title>Node.js App</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <h1>Procedure Consent</h1>
+    <h2>About your procedure</h2>
+    <p>In most cases of appendicitis, the appendix needs to be surgically removed as soon as possible. 
+    Removal of the appendix, known as an appendectomy or appendicectomy, is one of the most common operations 
+    in the UK and its success rate is excellent. The operation is most commonly performed as keyhole surgery (laparoscopy), 
+    which involves making several small cuts in your abdomen, through which special surgical instruments are inserted.
+    Open surgery, where a larger, single cut is made in the abdomen, is usually carried out if the appendix has burst 
+    or access is more difficult. Most people make a full recovery from an appendectomy in a couple of weeks, although 
+    strenuous activities may need to be avoided for up to 6 weeks after open surgery. </p>
+    <br>
+    <h2>Disclaimers</h2>
+    <h3>Nature of the Procedure:</h3>
+    <p>I understand that the appendicitis procedure involves the removal of the appendix, a small organ located 
+        in the lower right abdomen. The procedure will be performed by [Doctor's Full Name] and the medical team involved in my care.</p>
+
+    <h3>Potential Benefits:</h3>
+    <p>I acknowledge that the purpose of the procedure is to address and alleviate the symptoms associated 
+        with appendicitis, which may include abdominal pain, nausea, and fever.</p>
+
+    <h3>Risks and Complications:</h3>
+    <p>I am aware that, like any surgical procedure, the appendicitis procedure carries certain risks and potential 
+        complications, including but not limited to:</p>
+    <ul>
+        <li>Infection</li>
+        <li>Bleeding</li>
+        <li>Damage to surrounding organs</li>
+        <li>Adverse reaction to anesthesia</li>
+        <li>Development of hernia at the incision site</li>
+        <li>Rare instances of bowel obstruction or leakage</li>
+    </ul>
+
+    <h3>Alternatives:</h3>
+    <p>I understand that alternative treatments or procedures may be available, and I have discussed these options 
+        with my healthcare provider. I am aware of the potential risks and benefits associated with each alternative.</p>
+
+    <h3>Revocation of Consent:</h3>
+    <p>I understand that I have the right to revoke my consent at any time before or during the procedure. If 
+        I choose to revoke my consent, I will notify my healthcare provider immediately.</p>
+
+    <h3>Voluntary Consent:</h3>
+    <span>
+        <p>I, </p>
+        <!-- <label for="userName">Name:</label> -->
+        <input type="text" id="userName" placeholder="Enter your name">
+    </span>
+    <p>
+    <p>hereby consent to the appendicitis procedure after having had the opportunity to discuss it 
+        with my healthcare provider. I understand the information provided in this document and have had my questions addressed to my satisfaction.
+    </p>
+    <div class="flex-row">
+        <h3>Signature</h3>
+        <div class="wrapper" style="border: 2px solid #000; padding: 10px; width: 300px;">
+            <canvas id="signature-pad" width="300" height="200"></canvas>
+        </div>
+        <div class="clear-btn">
+            <button id="clearButton"><span> Clear </span></button>
+        </div>
+        <div class="save-btn">
+            <button id="saveButton"><span> Save </span></button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        const canvas = document.querySelector('#signature-pad');
+        const signaturePad = new SignaturePad(canvas, {
+            backgroundColor: "rgb(255,255,255)"
+        });
+        const pdf = new jsPDF()
+
+        const saveButton = document.querySelector('#saveButton');
+        saveButton.addEventListener('click', function () {
+            const signatureImage = signaturePad.toDataURL();
+
+            // Check if the signature pad is empty and display an error message if it is.
+            if (signaturePad.isEmpty()) {
+                alert('Please provide a signature.');
+	            return;
+            }
+
+            pdf.text("I, " + document.getElementById('userName').value + ", hereby consent to the appendicitis procedure after having had the opportunity to discuss it with my healthcare provider. I understand the information provided in this document and have had my questions addressed to my satisfaction.", 10,10, {
+                maxWidth: 180
+            })
+            pdf.addImage(signatureImage, 'PNG', 10,40,100,50);
+            pdf.save('consentForm.pdf')
+        });
+
+        const clearButton = document.getElementById("clearButton");
+        clearButton.addEventListener('click', function () {
+            signaturePad.clear();
+        })
+    </script>
+    
+</body>
+</html>
