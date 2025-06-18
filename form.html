@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Consent Form</title>
+    <script type="module" src="/form.js"></script>
+    <style>
+      #signatureCanvas {
+        border: 1px solid #000;
+        width: 100%;
+        max-width: 400px;
+        height: 200px;
+        /* touch-action: none; */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Consent Form</h1>
+    <pre id="formContent"></pre>
+    <canvas id="signatureCanvas"></canvas>
+    <br />
+    <button id="clearSignature">Clear</button>
+    <button id="savePdf">Save to PDF</button>
+    <button id="emailPdf">Email</button>
+  </body>
+</html>
