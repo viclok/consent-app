@@ -1,4 +1,4 @@
-import { PDFDocument, rgb } from 'pdf-lib';
+// import { PDFDocument, rgb } from 'pdf-lib';
 // Read query string
 const params = new URLSearchParams(window.location.search);
 const template = params.get('template');
