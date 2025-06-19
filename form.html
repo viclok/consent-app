@@ -12,6 +12,13 @@
         /* touch-action: none; */
       }
     </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "pdf-lib": "https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"
+            }
+        }
+    </script>
   </head>
   <body>
     <h1>Consent Form</h1>
@@ -21,6 +28,6 @@
     <button id="clearSignature">Clear</button>
     <button id="savePdf">Save to PDF</button>
     <button id="emailPdf">Email</button>
-    <script type="module" src="form.js"></script>
+    <script type="module" src="/form.js"></script>
   </body>
 </html>
