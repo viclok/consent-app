@@ -22,7 +22,7 @@
     <button id="clearSignature">Clear</button>
     <button id="savePdf">Save to PDF</button>
     <button id="emailPdf">Email</button>
-    <!-- <script>
+    <script>
       // import { PDFDocument, rgb } from 'pdf-lib';
       // Read query string
       const params = new URLSearchParams(window.location.search);
@@ -146,7 +146,7 @@
         const existingPdfBytes = await fetch('/templateform.pdf').then(res => res.arrayBuffer());
 
         // 2. Create a PDFDocument from it
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+        const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
 
         // 3. Get the first page
         const pages = pdfDoc.getPages();
@@ -175,7 +175,7 @@
           x: 98,              // adjust position as needed
           y: 152,
           size: 12,
-          color: rgb(0, 0, 0),
+          color: PDFLib.rgb(0, 0, 0),
         });
 
         // 7. Download the modified PDF
@@ -203,10 +203,10 @@
 
       emailButton.addEventListener('click', async () => {
         // 1. Fetch existing PDF
-        const existingPdfBytes = await fetch('/templateform.pdf').then(res => res.arrayBuffer());
+        const existingPdfBytes = await fetch('/public/templateform.pdf').then(res => res.arrayBuffer());
 
         // 2. Create a PDFDocument from it
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+        const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
 
         // 3. Get the first page
         const pages = pdfDoc.getPages();
@@ -235,7 +235,7 @@
           x: 98,              // adjust position as needed
           y: 152,
           size: 12,
-          color: rgb(0, 0, 0),
+          color: PDFLib.rgb(100, 0, 0),
         });
 
         // 7. Download the modified PDF
@@ -261,7 +261,7 @@
         // Open Gmail in a new tab
         window.open(gmailLink, "_blank");
       });
-    </script> -->
-    <script type="module" src="/public/form.js"></script>
+    </script>
+    <!-- <script type="module" src="/public/form.js"></script> -->
   </body>
 </html>
