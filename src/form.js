@@ -118,7 +118,7 @@ const saveButton = document.getElementById('savePdf');
 
 saveButton.addEventListener('click', async () => {
   // 1. Fetch existing PDF
-  const existingPdfBytes = await fetch('/public/templateform.pdf').then(res => res.arrayBuffer());
+  const existingPdfBytes = await fetch('/templateform.pdf').then(res => res.arrayBuffer());
 
   // 2. Create a PDFDocument from it
   const pdfDoc = await PDFDocument.load(existingPdfBytes);
