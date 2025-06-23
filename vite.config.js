@@ -8,6 +8,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         form: resolve(__dirname, 'form.html'),
+        clinic: resolve(__dirname, 'clinic.html'),
+        patient: resolve(__dirname, 'patient.html'),
       }
     }
   }
