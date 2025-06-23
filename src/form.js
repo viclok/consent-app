@@ -2,6 +2,29 @@ import { PDFDocument, rgb } from 'pdf-lib';
 // Read query string
 const params = new URLSearchParams(window.location.search);
 const template = params.get('template');
+const formBody = document.getElementById("form-body")
+formBody.style.display = 'none'
+let stage = 0
+
+const displayData = [
+  "hello", "stage 2", "stage 3"
+]
+
+const stagesBody = document.getElementById("stages")
+const continueButton = document.getElementById("stage-button")
+const stageText = document.getElementById("stage-text")
+stageText.textContent = displayData[stage]
+
+continueButton.addEventListener("click", () => {
+  if (stage < displayData.length - 1) {
+    stage++
+    stageText.textContent = displayData[stage]
+  } else {
+    stagesBody.style.display = "none"
+    formBody.style.display = ""
+  }
+
+})
 
 // Dummy content for now
 const dummyData = {
