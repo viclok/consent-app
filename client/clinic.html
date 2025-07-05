@@ -1,12 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinic</title>
+  <meta charset="UTF-8">
+  <title>Clinic</title>
 </head>
 <body>
-    <p id="message">Loading...</p>
-    <script type="module" src="src/clinic.js"></script>
+  <h1>Submit New Entry</h1>
+
+  <form id="entry-form" enctype="multipart/form-data">
+  <label>
+    Title:<br />
+    <input type="text" name="title" required />
+  </label><br /><br />
+
+  <label>
+    Upload File:<br />
+    <input type="file" name="file" required />
+  </label><br /><br />
+
+  <label>
+    Stage 1:<br />
+    <input type="text" name="stage1" required />
+  </label><br /><br />
+
+  <label>
+    Stage 2:<br />
+    <input type="text" name="stage2" required />
+  </label><br /><br />
+
+  <label>
+    Stage 3:<br />
+    <input type="text" name="stage3" required />
+  </label><br /><br />
+
+  <button type="submit">Submit</button>
+</form>
+
+
+  <p id="status"></p>
+  <script type="module" src="src/clinic.js"></script>
 </body>
 </html>
