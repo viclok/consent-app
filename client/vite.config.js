@@ -12,5 +12,10 @@ export default defineConfig({
         patient: resolve(__dirname, 'patient.html'),
       }
     }
+  },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:3000'
+    }
   }
 });
