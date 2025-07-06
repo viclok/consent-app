@@ -13,6 +13,7 @@ formBody.style.display = 'none';
 
 let stage = 0;
 let displayData = []; // will be populated from server
+let pdfPath = ''
 
 // Fetch stages from the server
 fetch('/api/messages')
@@ -25,6 +26,11 @@ fetch('/api/messages')
       stageText.textContent = `No template found for "${selectedTemplate}"`;
       continueButton.disabled = true;
       return;
+    }
+
+    pdfPath = "http://localhost:3000" + entry.file?.path;
+    if (!pdfPath) {
+      throw new Error('No file path found for this template.');
     }
 
     // Extract stages into displayData array
@@ -49,6 +55,7 @@ continueButton.addEventListener("click", () => {
   } else {
     stagesBody.style.display = "none";
     formBody.style.display = "";
+    resizeCanvasToDisplaySize(canvas);
   }
 });
 
@@ -163,107 +170,52 @@ function resizeCanvasToDisplaySize(canvas) {
 // Call this once on page load
 resizeCanvasToDisplaySize(canvas);
 
+
 const saveButton = document.getElementById('savePdf');
 
-saveButton.addEventListener('click', async () => {
-  // 1. Fetch existing PDF
-  const existingPdfBytes = await fetch('/templateform.pdf').then(res => res.arrayBuffer());
-
-  // 2. Create a PDFDocument from it
+async function generateSignedPdf(canvas) {
+  console.log(pdfPath)
+  const existingPdfBytes = await fetch(pdfPath).then(res => res.arrayBuffer());
   const pdfDoc = await PDFDocument.load(existingPdfBytes);
+  const firstPage = pdfDoc.getPages()[0];
 
-  // 3. Get the first page
-  const pages = pdfDoc.getPages();
-  const firstPage = pages[0];
-
-  // 4. Get canvas as PNG data URL
   const pngDataUrl = canvas.toDataURL('image/png');
-
-  // 5. Embed the PNG into the PDF
+  console.log(pngDataUrl)
   const pngImage = await pdfDoc.embedPng(pngDataUrl);
-  const pngDims = pngImage.scale(0.5); // adjust scale as needed
+  const pngDims = pngImage.scale(0.5);
 
-  // 6. Draw image onto PDF (positioned near bottom right)
   firstPage.drawImage(pngImage, {
-    x: 50, // adjust as needed
+    x: 50,
     y: 40,
     width: pngDims.width,
     height: pngDims.height
   });
 
-  // Get today's date as a string
-  const today = new Date().toLocaleDateString(); // e.g. "18/06/2025"
-
-  // Draw the date on the PDF (adjust coordinates)
-  firstPage.drawText(`${today}`, {
-    x: 98,              // adjust position as needed
+  const today = new Date().toLocaleDateString();
+  firstPage.drawText(today, {
+    x: 98,
     y: 152,
     size: 12,
     color: rgb(0, 0, 0),
   });
 
-  // 7. Download the modified PDF
-  const pdfBytes = await pdfDoc.save();
+  return await pdfDoc.save();
+}
+
+// 🔘 Save to file
+saveButton.addEventListener('click', async () => {
+  const pdfBytes = await generateSignedPdf(canvas);
 
   const blob = new Blob([pdfBytes], { type: 'application/pdf' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
   link.download = 'colonoscopy_signed.pdf';
   link.click();
-
-  // // Prompt email
-  // const recipient = "yourdoctor@example.com";
-  // const subject = "Colonoscopy Consent Form";
-  // const body = `Hi,\n\nPlease find my signed consent form attached.\n\nRegards,`;
-
-  // // Encode values for URL safety
-  // const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-  // // Open Gmail in a new tab
-  // window.open(gmailLink, "_blank");
 });
 
-const emailButton = document.getElementById('emailPdf');
-
-emailButton.addEventListener('click', async () => {
-  // 1. Fetch existing PDF
-  const existingPdfBytes = await fetch('/templateform.pdf').then(res => res.arrayBuffer());
-
-  // 2. Create a PDFDocument from it
-  const pdfDoc = await PDFDocument.load(existingPdfBytes);
-
-  // 3. Get the first page
-  const pages = pdfDoc.getPages();
-  const firstPage = pages[0];
-
-  // 4. Get canvas as PNG data URL
-  const pngDataUrl = canvas.toDataURL('image/png');
-
-  // 5. Embed the PNG into the PDF
-  const pngImage = await pdfDoc.embedPng(pngDataUrl);
-  const pngDims = pngImage.scale(0.5); // adjust scale as needed
-
-  // 6. Draw image onto PDF (positioned near bottom right)
-  firstPage.drawImage(pngImage, {
-    x: 50, // adjust as needed
-    y: 40,
-    width: pngDims.width,
-    height: pngDims.height
-  });
-
-  // Get today's date as a string
-  const today = new Date().toLocaleDateString(); // e.g. "18/06/2025"
-
-  // Draw the date on the PDF (adjust coordinates)
-  firstPage.drawText(`${today}`, {
-    x: 98,              // adjust position as needed
-    y: 152,
-    size: 12,
-    color: rgb(0, 0, 0),
-  });
-
-  // 7. Download the modified PDF
-  const pdfBytes = await pdfDoc.save();
+// 📧 Save and open Gmail
+document.getElementById('emailPdf').addEventListener('click', async () => {
+  const pdfBytes = await generateSignedPdf(canvas);
 
   const blob = new Blob([pdfBytes], { type: 'application/pdf' });
   const link = document.createElement('a');
@@ -271,17 +223,133 @@ emailButton.addEventListener('click', async () => {
   link.download = 'colonoscopy_signed.pdf';
   link.click();
 
-  // Show reminder alert BEFORE opening Gmail
   alert("Reminder: Please attach the downloaded PDF before sending your email.");
 
-  // Prompt email
   const recipient = "yourdoctor@example.com";
   const subject = "Colonoscopy Consent Form";
   const body = `Hi,\n\nPlease find my signed consent form attached.\n\nRegards,`;
-
-  // Encode values for URL safety
   const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-  // Open Gmail in a new tab
   window.open(gmailLink, "_blank");
 });
+
+// saveButton.addEventListener('click', async () => {
+//   // 1. Fetch existing PDF
+//   const existingPdfBytes = await fetch('/templateform.pdf').then(res => res.arrayBuffer());
+
+//   // 2. Create a PDFDocument from it
+//   const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+//   // 3. Get the first page
+//   const pages = pdfDoc.getPages();
+//   const firstPage = pages[0];
+
+//   // 4. Get canvas as PNG data URL
+//   const pngDataUrl = canvas.toDataURL('image/png');
+
+//   // 5. Embed the PNG into the PDF
+//   const pngImage = await pdfDoc.embedPng(pngDataUrl);
+//   const pngDims = pngImage.scale(0.5); // adjust scale as needed
+
+//   // 6. Draw image onto PDF (positioned near bottom right)
+//   firstPage.drawImage(pngImage, {
+//     x: 50, // adjust as needed
+//     y: 40,
+//     width: pngDims.width,
+//     height: pngDims.height
+//   });
+
+//   // Get today's date as a string
+//   const today = new Date().toLocaleDateString(); // e.g. "18/06/2025"
+
+//   // Draw the date on the PDF (adjust coordinates)
+//   firstPage.drawText(`${today}`, {
+//     x: 98,              // adjust position as needed
+//     y: 152,
+//     size: 12,
+//     color: rgb(0, 0, 0),
+//   });
+
+//   // 7. Download the modified PDF
+//   const pdfBytes = await pdfDoc.save();
+
+//   const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+//   const link = document.createElement('a');
+//   link.href = URL.createObjectURL(blob);
+//   link.download = 'colonoscopy_signed.pdf';
+//   link.click();
+
+//   // // Prompt email
+//   // const recipient = "yourdoctor@example.com";
+//   // const subject = "Colonoscopy Consent Form";
+//   // const body = `Hi,\n\nPlease find my signed consent form attached.\n\nRegards,`;
+
+//   // // Encode values for URL safety
+//   // const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+//   // // Open Gmail in a new tab
+//   // window.open(gmailLink, "_blank");
+// });
+
+// const emailButton = document.getElementById('emailPdf');
+
+// emailButton.addEventListener('click', async () => {
+//   // 1. Fetch existing PDF
+//   const existingPdfBytes = await fetch('/templateform.pdf').then(res => res.arrayBuffer());
+
+//   // 2. Create a PDFDocument from it
+//   const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+//   // 3. Get the first page
+//   const pages = pdfDoc.getPages();
+//   const firstPage = pages[0];
+
+//   // 4. Get canvas as PNG data URL
+//   const pngDataUrl = canvas.toDataURL('image/png');
+
+//   // 5. Embed the PNG into the PDF
+//   const pngImage = await pdfDoc.embedPng(pngDataUrl);
+//   const pngDims = pngImage.scale(0.5); // adjust scale as needed
+
+//   // 6. Draw image onto PDF (positioned near bottom right)
+//   firstPage.drawImage(pngImage, {
+//     x: 50, // adjust as needed
+//     y: 40,
+//     width: pngDims.width,
+//     height: pngDims.height
+//   });
+
+//   // Get today's date as a string
+//   const today = new Date().toLocaleDateString(); // e.g. "18/06/2025"
+
+//   // Draw the date on the PDF (adjust coordinates)
+//   firstPage.drawText(`${today}`, {
+//     x: 98,              // adjust position as needed
+//     y: 152,
+//     size: 12,
+//     color: rgb(0, 0, 0),
+//   });
+
+//   // 7. Download the modified PDF
+//   const pdfBytes = await pdfDoc.save();
+
+//   const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+//   const link = document.createElement('a');
+//   link.href = URL.createObjectURL(blob);
+//   link.download = 'colonoscopy_signed.pdf';
+//   link.click();
+
+//   // Show reminder alert BEFORE opening Gmail
+//   alert("Reminder: Please attach the downloaded PDF before sending your email.");
+
+//   // Prompt email
+//   const recipient = "yourdoctor@example.com";
+//   const subject = "Colonoscopy Consent Form";
+//   const body = `Hi,\n\nPlease find my signed consent form attached.\n\nRegards,`;
+
+//   // Encode values for URL safety
+//   const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+//   // Open Gmail in a new tab
+//   window.open(gmailLink, "_blank");
+// });
