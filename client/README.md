@@ -3,8 +3,6 @@ Development guide
 - Create multi-stage form [IN PROGRESS]
 - initials for signature
 
-
-- Figure out how to store the PDF (multer)
 - connect the stages to the patient side
 
 

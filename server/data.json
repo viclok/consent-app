@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "title": "Colono",
+    "file": {
+      "name": "colonoscopy_signed.pdf",
+      "storedAs": "1751791810501_colonoscopy_signed.pdf",
+      "path": "/uploads/1751791810501_colonoscopy_signed.pdf",
+      "mimetype": "application/pdf"
+    },
+    "stages": {
+      "stage1": "The procedure will involve your stomach.",
+      "stage2": "The procedure will have many risks",
+      "stage3": "It is dangerous\nDo you consent?"
+    }
+  }
+]

@@ -1,75 +1,101 @@
 import { PDFDocument, rgb } from 'pdf-lib';
-// Read query string
+
+// Get the selected template from the URL
 const params = new URLSearchParams(window.location.search);
-const template = params.get('template');
-const formBody = document.getElementById("form-body")
-formBody.style.display = 'none'
-let stage = 0
+const selectedTemplate = params.get('template');
 
-const displayData = [
-  "hello", "stage 2", "stage 3"
-]
+const formBody = document.getElementById("form-body");
+const stagesBody = document.getElementById("stages");
+const continueButton = document.getElementById("stage-button");
+const stageText = document.getElementById("stage-text");
 
-const stagesBody = document.getElementById("stages")
-const continueButton = document.getElementById("stage-button")
-const stageText = document.getElementById("stage-text")
-stageText.textContent = displayData[stage]
+formBody.style.display = 'none';
 
+let stage = 0;
+let displayData = []; // will be populated from server
+
+// Fetch stages from the server
+fetch('/api/messages')
+  .then(res => res.json())
+  .then(data => {
+    // Find the entry with a matching title
+    const entry = data.find(item => item.title === selectedTemplate);
+
+    if (!entry) {
+      stageText.textContent = `No template found for "${selectedTemplate}"`;
+      continueButton.disabled = true;
+      return;
+    }
+
+    // Extract stages into displayData array
+    const { stage1, stage2, stage3 } = entry.stages;
+    displayData = [stage1, stage2, stage3].filter(Boolean); // filter removes empty/null
+
+    // Show the first stage
+    stageText.textContent = displayData[stage];
+    document.getElementById('formContent').textContent = displayData[displayData.length - 1]
+  })
+  .catch(err => {
+    console.error('Failed to load template data:', err);
+    stageText.textContent = 'Error loading data';
+    continueButton.disabled = true;
+  });
+
+// On button click, cycle through stages
 continueButton.addEventListener("click", () => {
-  if (stage < displayData.length - 1) {
-    stage++
-    stageText.textContent = displayData[stage]
+  if (stage < displayData.length - 2) {
+    stage++;
+    stageText.textContent = displayData[stage];
   } else {
-    stagesBody.style.display = "none"
-    formBody.style.display = ""
+    stagesBody.style.display = "none";
+    formBody.style.display = "";
   }
-
-})
+});
 
 // Dummy content for now
-const dummyData = {
-  template1: `1. Purpose of the Procedure
-I understand that a colonoscopy is a procedure that allows a physician to examine the inside of my large intestine (colon and rectum) using a long, flexible tube with a camera. It may be performed to investigate symptoms such as bleeding, abdominal pain, or changes in bowel habits, or as a routine screening for colorectal cancer.
+// const dummyData = {
+//   template1: `1. Purpose of the Procedure
+// I understand that a colonoscopy is a procedure that allows a physician to examine the inside of my large intestine (colon and rectum) using a long, flexible tube with a camera. It may be performed to investigate symptoms such as bleeding, abdominal pain, or changes in bowel habits, or as a routine screening for colorectal cancer.
 
-2. Procedure Description
-During the colonoscopy:
-- The doctor will insert the colonoscope into the rectum to view the colon lining.
-- Air or carbon dioxide may be introduced to improve visibility.
-- Biopsies (tissue samples) may be taken.
-- Polyps (abnormal tissue growths) may be removed for further examination.
+// 2. Procedure Description
+// During the colonoscopy:
+// - The doctor will insert the colonoscope into the rectum to view the colon lining.
+// - Air or carbon dioxide may be introduced to improve visibility.
+// - Biopsies (tissue samples) may be taken.
+// - Polyps (abnormal tissue growths) may be removed for further examination.
 
-3. Risks and Complications
-I understand that while colonoscopy is generally safe, potential risks include:
-- Bleeding, especially if a biopsy or polyp removal is performed
-- Perforation (a tear in the colon wall), which may require surgery
-- Infection
-- Reaction to sedatives
+// 3. Risks and Complications
+// I understand that while colonoscopy is generally safe, potential risks include:
+// - Bleeding, especially if a biopsy or polyp removal is performed
+// - Perforation (a tear in the colon wall), which may require surgery
+// - Infection
+// - Reaction to sedatives
 
-4. Sedation and Anesthesia
-I acknowledge that sedation will be administered to reduce discomfort. I understand the risks associated with sedation, including drowsiness, allergic reactions, or breathing difficulties.
+// 4. Sedation and Anesthesia
+// I acknowledge that sedation will be administered to reduce discomfort. I understand the risks associated with sedation, including drowsiness, allergic reactions, or breathing difficulties.
 
-5. Alternatives
-I am aware that alternatives to colonoscopy may include:
-- CT colonography (virtual colonoscopy)
-- Fecal occult blood test (FOBT)
-- Stool DNA test
+// 5. Alternatives
+// I am aware that alternatives to colonoscopy may include:
+// - CT colonography (virtual colonoscopy)
+// - Fecal occult blood test (FOBT)
+// - Stool DNA test
 
-However, these may not allow for tissue sampling or polyp removal.
+// However, these may not allow for tissue sampling or polyp removal.
 
-6. Consent
-I have had the opportunity to ask questions and all my questions have been answered to my satisfaction.
+// 6. Consent
+// I have had the opportunity to ask questions and all my questions have been answered to my satisfaction.
 
-I voluntarily consent to undergo a colonoscopy, including the removal of polyps or biopsy if necessary, and the administration of sedation.
+// I voluntarily consent to undergo a colonoscopy, including the removal of polyps or biopsy if necessary, and the administration of sedation.
 
-Date: {{DATE}}
-Signature of Patient: ___________________________`,
-  template2: "This is the consent form for Template 2."
-};
+// Date: {{DATE}}
+// Signature of Patient: ___________________________`,
+//   template2: "This is the consent form for Template 2."
+// };
 
 const formContent = document.getElementById('formContent');
-const mytemplate = dummyData[params.get('template')];
-const rendered = mytemplate.replace("{{DATE}}", new Date().toLocaleDateString());
-formContent.textContent = rendered;
+// const mytemplate = displayData;
+// const rendered = mytemplate.replace("{{DATE}}", new Date().toLocaleDateString());
+// formContent.textContent = mytemplate;
 // formContent.textContent = dummyData[template] || "Unknown template selected.";
 
 // ===== Signature Input Logic =====
