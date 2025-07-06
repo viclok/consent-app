@@ -7,6 +7,8 @@
 <body>
   <h1>Submit New Entry</h1>
 
+  <button id="downloadTemplate">Download Consent Form Template</button>
+
   <form id="entry-form" enctype="multipart/form-data">
   <label>
     Title:<br />
@@ -20,17 +22,17 @@
 
   <label>
     Stage 1:<br />
-    <input type="text" name="stage1" required />
+    <textarea name="stage1" required rows="4" cols="40"></textarea>
   </label><br /><br />
 
   <label>
     Stage 2:<br />
-    <input type="text" name="stage2" required />
+    <textarea name="stage2" required rows="4" cols="40"></textarea>
   </label><br /><br />
 
   <label>
     Stage 3:<br />
-    <input type="text" name="stage3" required />
+    <textarea name="stage3" required rows="4" cols="40"></textarea>
   </label><br /><br />
 
   <button type="submit">Submit</button>

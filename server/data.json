@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "title": "Colono",
+    "file": {
+      "name": "templateform.pdf",
+      "storedAs": "templateform.pdf",
+      "path": "/uploads/templateform.pdf",
+      "mimetype": "application/pdf"
+    },
+    "stages": {
+      "stage1": "The procedure will involve your stomach.",
+      "stage2": "The procedure will have many risks",
+      "stage3": "It is dangerous\nDo you consent?"
+    }
+  },
+  {
+    "title": "Gastroscopy",
+    "file": {
+      "name": "gastroscopy.pdf",
+      "storedAs": "1751808127781_gastroscopy.pdf",
+      "path": "/uploads/1751808127781_gastroscopy.pdf",
+      "mimetype": "application/pdf"
+    },
+    "stages": {
+      "stage1": "You will undergo a gastroscopy.",
+      "stage2": "It might hurt and you may die.",
+      "stage3": "Please sign the form when you are ready."
+    }
+  }
+]
