@@ -84,6 +84,17 @@ app.post('/api/messages', upload.single('file'), (req, res) => {
   });
 });
 
+// Serve the template PDF file for download
+app.get('/api/templates/form_template.pdf', (req, res) => {
+  const filePath = path.join(__dirname, 'templates', 'form_template.pdf');
+  res.download(filePath, 'consent-form-template.pdf', (err) => {
+    if (err) {
+      console.error('Error sending template PDF:', err);
+      res.status(500).send('Server error');
+    }
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
